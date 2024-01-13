@@ -5,7 +5,7 @@ use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 
 mod libs;
-use libs::room::{Room, self};
+use libs::room::{Room, create_next_room};
 use libs::consts::room_consts::TOP;
 use libs::consts::room_consts::BOTTOM;
 use libs::consts::room_consts::LEFT;
@@ -25,7 +25,7 @@ fn main() {
    
    let new_room = current_room.clone();
    rooms.insert((0, 0), new_room);
-   current_room.display_room((1, 1));
+   current_room.render_room((1, 1));
 
    for c in stdin.keys() {
       match c.unwrap() {
@@ -38,9 +38,9 @@ fn main() {
                if let Some(room) = rooms.get(&new_position) {
                   current_room = room.clone();
                } else {
-                  current_room = Room::new(new_position, vec![TOP, LEFT, RIGHT]);
-                  let new_room = current_room.clone();
-                  rooms.insert((new_room.grid_position.0, new_room.grid_position.1), new_room);
+                  let new_room = create_next_room(new_position, RIGHT);
+                  current_room = new_room.clone();
+                  rooms.insert(new_position, new_room);
                }
             }
             if x > 1 {
@@ -56,9 +56,9 @@ fn main() {
                if let Some(room) = rooms.get(&new_position) {
                   current_room = room.clone();
                } else {
-                  current_room = Room::new(new_position, vec![LEFT, RIGHT]);
-                  let new_room = current_room.clone();
-                  rooms.insert((new_room.grid_position.0, new_room.grid_position.1), new_room);
+                  let new_room = create_next_room(new_position, LEFT);
+                  current_room = new_room.clone();
+                  rooms.insert(new_position, new_room);
                }
            }
 
@@ -75,9 +75,9 @@ fn main() {
                if let Some(room) = rooms.get(&new_position) {
                   current_room = room.clone();
                } else {
-                  current_room = Room::new(new_position, vec![LEFT, RIGHT, BOTTOM]);
-                  let new_room = current_room.clone();
-                  rooms.insert((new_room.grid_position.0, new_room.grid_position.1), new_room);
+                  let new_room = create_next_room(new_position, BOTTOM);
+                  current_room = new_room.clone();
+                  rooms.insert(new_position, new_room);
                }
             }
 
@@ -94,9 +94,9 @@ fn main() {
                if let Some(room) = rooms.get(&new_position) {
                   current_room = room.clone();
                } else {
-                  current_room = Room::new(new_position, vec![LEFT, RIGHT, TOP]);
-                  let new_room = current_room.clone();
-                  rooms.insert((new_room.grid_position.0, new_room.grid_position.1), new_room);
+                  let new_room = create_next_room(new_position, TOP);
+                  current_room = new_room.clone();
+                  rooms.insert(new_position, new_room);
                }
             }
 
@@ -109,6 +109,6 @@ fn main() {
       }
       stdout.flush().unwrap();
       std::process::Command::new("clear").status().unwrap();
-      current_room.display_room((x, y));
+      current_room.render_room((x, y));
    }
 }

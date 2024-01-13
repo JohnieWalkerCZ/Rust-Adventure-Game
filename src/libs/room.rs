@@ -1,6 +1,10 @@
+use std::{char, collections::HashMap};
+
 use crate::libs::consts::room_consts;
 use rand::Rng;
 use rand::seq::SliceRandom;
+
+use super::consts::room_consts::{TOP, BOTTOM, LEFT, RIGHT};
 
 pub struct Room {
    pub grid_position: (i8, i8),
@@ -16,7 +20,7 @@ impl Room {
    }
    
 
-   pub fn display_room(&self, position: (u8, u8)) {
+   pub fn render_room(&self, position: (u8, u8)) {
 
       for r in 0..7 {
          for c in 0..12 {
@@ -47,14 +51,6 @@ impl Room {
       }
    }
 
-   fn create_random_room(&self) {
-      let doors = self.get_random_doors();
-   }
-
-   fn get_random_doors(&self) -> Vec<char> {
-      return vec!['w'];
-   }
-
    pub fn clone(&self) -> Room {
       return Room {
          grid_position: self.grid_position,
@@ -63,3 +59,16 @@ impl Room {
    }
 }
 
+pub fn create_next_room (grid_position: (i8, i8), direction: char, rooms: HashMap<(i8, i8), Room>) -> Room {
+   // Doors - 1 from the coming direction, next random
+   let mut rng = rand::thread_rng();
+   let mut all_directions = vec![TOP, BOTTOM, LEFT, RIGHT];
+   let index = all_directions.iter().position(|&x| x == direction).unwrap();
+   all_directions.remove(index);
+   let num_doors = rng.gen_range(0..all_directions.len());
+   let mut new_doors: Vec<_> = all_directions.choose_multiple(&mut rng, num_doors).cloned().collect();
+   new_doors.push(direction);
+   let new_room = Room::new(grid_position, new_doors);
+   return new_room;
+
+}
