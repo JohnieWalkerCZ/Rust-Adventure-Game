@@ -38,7 +38,7 @@ fn main() {
                if let Some(room) = rooms.get(&new_position) {
                   current_room = room.clone();
                } else {
-                  let new_room = create_next_room(new_position, RIGHT);
+                  let new_room = create_next_room(new_position, RIGHT, &mut rooms);
                   current_room = new_room.clone();
                   rooms.insert(new_position, new_room);
                }
@@ -56,7 +56,7 @@ fn main() {
                if let Some(room) = rooms.get(&new_position) {
                   current_room = room.clone();
                } else {
-                  let new_room = create_next_room(new_position, LEFT);
+                  let new_room = create_next_room(new_position, LEFT, &mut rooms);
                   current_room = new_room.clone();
                   rooms.insert(new_position, new_room);
                }
@@ -75,7 +75,7 @@ fn main() {
                if let Some(room) = rooms.get(&new_position) {
                   current_room = room.clone();
                } else {
-                  let new_room = create_next_room(new_position, BOTTOM);
+                  let new_room = create_next_room(new_position, BOTTOM, &mut rooms);
                   current_room = new_room.clone();
                   rooms.insert(new_position, new_room);
                }
@@ -94,7 +94,8 @@ fn main() {
                if let Some(room) = rooms.get(&new_position) {
                   current_room = room.clone();
                } else {
-                  let new_room = create_next_room(new_position, TOP);
+                  let new_room = create_next_room(new_position, TOP, &mut rooms);
+
                   current_room = new_room.clone();
                   rooms.insert(new_position, new_room);
                }
