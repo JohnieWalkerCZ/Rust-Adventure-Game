@@ -21,7 +21,7 @@ fn main() {
    
    let mut rooms: HashMap<(i8, i8), Room> = HashMap::new();
    
-   let mut current_room = Room::new((0, 0), vec![TOP, BOTTOM, RIGHT, LEFT]);
+   let mut current_room = Room::new((0, 0), vec![TOP, BOTTOM, RIGHT, LEFT], true);
    
    let new_room = current_room.clone();
    rooms.insert((0, 0), new_room);

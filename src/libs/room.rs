@@ -1,22 +1,25 @@
 use std::{char, collections::HashMap};
 
 use crate::libs::consts::room_consts;
-use rand::Rng;
 use rand::seq::SliceRandom;
 use std::collections::HashSet;
+use rand::distributions::WeightedIndex;
+use rand::prelude::*;
 
 use super::consts::room_consts::{TOP, BOTTOM, LEFT, RIGHT};
-
+#[derive(Debug)]
 pub struct Room {
    pub grid_position: (i8, i8),
    pub doors: Vec<char>,
+   is_start: bool,
 }
 
 impl Room {
-   pub fn new(grid_position: (i8, i8), doors: Vec<char>) -> Room {
+   pub fn new(grid_position: (i8, i8), doors: Vec<char>, is_start: bool) -> Room {
       Room {
          grid_position,
          doors,
+         is_start,
       }
    }
    
@@ -56,6 +59,7 @@ impl Room {
       return Room {
          grid_position: self.grid_position,
          doors: self.doors.clone(),
+         is_start: self.is_start,
       };
    }
 }
@@ -114,13 +118,32 @@ pub fn create_next_room (grid_position: (i8, i8), direction: char, rooms: &mut H
 
    // let index = all_directions.iter().position(|&x| x == direction).unwrap();
    // all_directions.remove(index);
+   // let items = [('a', 0.5), ('b', 0.1), ('c', 0.3), ('d', 0.1)];
+   // let dist = WeightedIndex::new(items.iter().map(|item| item.1)).unwrap(); 
+   // for _ in 0..100 {
+   //   println!("\r{}\r", items[dist.sample(&mut rng)].0);
+   // }
+   let mut num_doors = 0;
+   if result.len() == 1 {
+      let items = [(0, 0.25), (1, 0.75)];
+      let dist = WeightedIndex::new(items.iter().map(|item| item.1)).unwrap();
+      num_doors = items[dist.sample(&mut rng)].0;
+   } else if result.len() == 2 {
+      let items = [(0, 0.15), (1, 0.35), (2, 0.5)];
+      let dist = WeightedIndex::new(items.iter().map(|item| item.1)).unwrap();
+      num_doors = items[dist.sample(&mut rng)].0;
+   } else if result.len() == 3 {
+      let items = [(0, 0.1), (1, 0.3), (2, 0.4), (3, 0.2)];
+      let dist = WeightedIndex::new(items.iter().map(|item| item.1)).unwrap();
+      num_doors = items[dist.sample(&mut rng)].0;
+   }
 
-   let num_doors = rng.gen_range(0..result.len());
-   
+//   let num_doors = rng.gen_range(0..result.len() + 1); // [0, result.len + 1)
+   println!("\rresult.len() = {}, selected num_doors = {num_doors}\r", result.len());
    let mut new_doors: Vec<_> = result.choose_multiple(&mut rng, num_doors).cloned().collect();
    new_doors.append(&mut neighbour_rooms);
    
-   let new_room = Room::new(grid_position, new_doors);
+   let new_room = Room::new(grid_position, new_doors, false);
    return new_room;
 
 }
